@@ -1,0 +1,35 @@
+#!/bin/sh
+#
+# Copyright 2016 Carlo Strub <cs@carlostrub.ch>, BSD license
+# Get the latest version from
+# https://github.com/carlostrub/ipfw-spamhaus-drop
+
+fetch -o /tmp/drop.txt "https://www.spamhaus.org/drop/drop.txt"
+
+sed -i '' "s/;.*//" /tmp/drop.txt
+
+ipfw table 2 flush
+
+while read -r IP; do
+                ipfw table 2 add $IP
+        done < /tmp/drop.txt
+
+fetch -o /tmp/edrop.txt "https://www.spamhaus.org/drop/edrop.txt"
+
+sed -i '' "s/;.*//" /tmp/edrop.txt
+
+ipfw table 3 flush
+
+while read -r IP; do
+                ipfw table 3 add $IP
+        done < /tmp/edrop.txt
+
+fetch -o /tmp/dropv6.txt "https://www.spamhaus.org/drop/dropv6.txt"
+
+sed -i '' "s/;.*//" /tmp/dropv6.txt
+
+ipfw table 4 flush
+
+while read -r IP; do
+                ipfw table 4 add $IP
+        done < /tmp/dropv6.txt
